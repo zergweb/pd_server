@@ -24,10 +24,7 @@ namespace PdApi.Controllers
             _context = context;
             _dm = dm;
         }
-        public class TestBody
-        {
-            public int id { get; set; }
-        }
+       
         public class UpdateStudBody
         {
             public LkStudent stud { get; set; }
@@ -69,21 +66,41 @@ namespace PdApi.Controllers
             return Ok(JsonConvert.SerializeObject(lkStudent, Formatting.Indented));
         }
         [HttpPost("/getStudent")]
-        public async Task<ActionResult> GetStudent([FromBody]TestBody test)
+        public async Task<ActionResult> GetStudent([FromBody]RequestBodyId test)
         {
-            var lkStudent =await _dm.GetStudent(test.id);
+            var lkStudent =await _dm.GetStudent(test.Id);
             var r = Request;
             if (lkStudent == null)
             {
                 return NotFound();
             }
            
-            return Ok(JsonConvert.SerializeObject(lkStudent, Formatting.Indented));
+            return Ok(JsonConvert.SerializeObject(lkStudent));
+        }
+        [HttpPost("/getClassmates")]
+        public async Task<ActionResult> GetСlassmates([FromBody]RequestBodyId test)
+        {
+            var lkStudents = await _dm.GetClassmates(test.Id);
+            if (lkStudents == null)
+            {
+                return NotFound();
+            }
+            return Ok(JsonConvert.SerializeObject(lkStudents));
+        }
+        [HttpPost("/getTeachers")]
+        public async Task<ActionResult> GetTeachers([FromBody]RequestBodyId test)
+        {
+            var lkStudents = await _dm.GetTeachers(test.Id);
+            if (lkStudents == null)
+            {
+                return NotFound();
+            }
+            return Ok(JsonConvert.SerializeObject(lkStudents));
         }
         [HttpPost("/getprofileconfig")]
-        public async Task<ActionResult> GetConfig([FromBody]TestBody test)
+        public async Task<ActionResult> GetConfig([FromBody]RequestBodyId test)
         {
-            var lkConfig = await _dm.GetPublicConfig(test.id);
+            var lkConfig = await _dm.GetPublicConfig(test.Id);
             if (lkConfig == null)
             {
                 return NotFound();
@@ -102,9 +119,9 @@ namespace PdApi.Controllers
             return Ok(JsonConvert.SerializeObject(fac));
         }
         [HttpPost("/getlastprojects")]
-        public async Task<ActionResult> GetLastProjects([FromBody]TestBody test)
+        public async Task<ActionResult> GetLastProjects([FromBody]RequestBodyId test)
         {
-            var lkConfig = await _dm.GetLastProjects(test.id);
+            var lkConfig = await _dm.GetLastProjects(test.Id);
             if (lkConfig == null)
             {
                 return NotFound();

@@ -20,9 +20,9 @@ namespace PdApi
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseKestrel()
+                //.UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<Startup>()
-                .UseUrls("http://localhost:5300/");
+                .UseStartup<Startup>();
+                //.UseUrls("http://localhost:5300/");
     }
 }

@@ -18,11 +18,6 @@ namespace PdApi.Controllers
         {
             _dm = dm;
         }
-        public class RequestBody
-        {
-           
-            public Project NewProject { get; set; }
-        }
         public class RequestBody2
         {
 
@@ -37,25 +32,42 @@ namespace PdApi.Controllers
         [HttpPost("/addProject")]
         public async Task<ActionResult> AddProject([FromBody]RequestBody body)
         {
-            var t = body.NewProject;
-            await _dm.AddProject(body.NewProject);
+            var t = body.Project;
+            await _dm.AddProject(body.Project);
             return Ok();
+        }
+        [HttpPost("/getProject")]
+        public async Task<ActionResult> GetProject([FromBody]RequestBody2 body)
+        {
+            var t = await _dm.GetProject(body.UserId);
+            if (t==null)
+            {
+            return NotFound();
+            }
+            return Ok(JsonConvert.SerializeObject(t));
         }
         [HttpPut("/updateProject")]
         public async Task<ActionResult> UpdateProject([FromBody]RequestBody body)
         {
-           
-            await _dm.UpdateProject(body.NewProject);
-            return Ok();
+            if (body.Project != null)
+            {
+                await _dm.UpdateProject(body.Project);
+                return Ok();
+            }
+            return NotFound();
+            
         }
         [HttpPost("/getPortfolio")]
         public async Task<ActionResult> GetPortfolio([FromBody]RequestBody2 body)
-        {
-                     
+        {                    
                 var portfolio = await _dm.GetPortfolio(body.UserId);
-                return Ok(JsonConvert.SerializeObject(portfolio));
-            
-           
+            return Ok(JsonConvert.SerializeObject(portfolio));
+        }
+        [HttpPost("/getPublicPortfolio")]
+        public async Task<ActionResult> GetPublicPortfolio([FromBody]RequestBodyId body)
+        {
+            var portfolio = await _dm.GetPublicPortfolio(body.Id);
+            return Ok(JsonConvert.SerializeObject(portfolio));
         }
     }
 }

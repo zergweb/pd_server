@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace PdApi.Model
         public List<ProjectDoc> ProjectDocs { get; set; }
 
         public int PortfolioId { get; set; }
+        [JsonIgnore]
         public Portfolio Portfolio { get; set; }
     }
 }

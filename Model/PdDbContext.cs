@@ -27,6 +27,7 @@ namespace PdApi.Model
         public DbSet<PublicProfileConfig> PublicProfileConfigs { get; set; }
         public DbSet<SubjectTeacher> SubjectTeachers { get; set; }
         public DbSet<StudentSkill> StudentSkills { get; set; }
+        public DbSet<Certificate> Certificate { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,10 +67,10 @@ namespace PdApi.Model
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var polytech = "server=std-mysql.ist.mospolytech.ru;port=3306;database=std_267;uid=std_267;password=893z106d5732;SSL Mode=None;";
-            var local = "server=localhost;port=3306;database=pd;uid=root;password=1234;";
+            //var dbstr = "server=std-mysql.ist.mospolytech.ru;port=3306;database=std_267;uid=std_267;password=893z106d5732;SSL Mode=None;";
+            var dbstr = "server=localhost;port=3306;database=pd;uid=root;password=1234;";
             optionsBuilder
-            .UseMySql(polytech,
+            .UseMySql(dbstr,
             b => b.MigrationsAssembly("PdApi")
             );
         }

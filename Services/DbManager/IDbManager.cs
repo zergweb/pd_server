@@ -16,5 +16,12 @@ namespace PdApi.Services.DbManager
         Task<Portfolio> GetPortfolio(int userid);
         Task AddProject(Project p);
         Task UpdateProject(Project p);
+        Task<Project> GetProject(int id);
+        Task<List<Certificate>> GetCertificates(int id);
+        Task<PublicProfile> GetPublicProfile(int id);
+        Task<Portfolio> GetPublicPortfolio(int id);
+        Task<List<LkStudent>> GetClassmates(int id);
+        Task<List<LkTeacher>> GetTeachers(int id);
+   
     }
 }

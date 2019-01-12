@@ -77,7 +77,7 @@ namespace PdApi.Services.DbManager
                     Name=x.Name,
                     FacultySections=x.FacultySections
                 })
-                .ToListAsync();
+                .AsNoTracking().ToListAsync();
         }
 
         public Task AddProject(Project p)
@@ -85,10 +85,75 @@ namespace PdApi.Services.DbManager
             _db.Projects.Add(p);
            return _db.SaveChangesAsync();
         }
+        public Task<Project> GetProject(int id)
+        {
+            return _db.Projects.Include(x => x.ProjectDocs)
+                .Where(x=>x.ProjectId==id).AsNoTracking().FirstOrDefaultAsync();
+                
+        }
         public Task UpdateProject(Project p)
         {
             _db.Projects.Update(p);
             return _db.SaveChangesAsync();
+        }
+        public Task<List<Certificate>> GetCertificates(int id)
+        {
+            return _db.Certificate.Where(x=>x.LkStudentId==id).Include(x=>x.Image)
+                .AsNoTracking().ToListAsync();
+        }
+        public async Task<PublicProfile> GetPublicProfile(int id)
+        {
+            var stud= await _db.Students.Where(x=>x.Id==id)
+                .Include(d => d.StudentSkills).ThenInclude(p => p.Skill)
+                .Include(x => x.Group).ThenInclude(p => p.Subjects).ThenInclude(c => c.Subject)
+                .Include(x => x.Group).ThenInclude(p => p.FacultySection).ThenInclude(c => c.Faculty)
+                .Include(x => x.Group).ThenInclude(p => p.Subjects).ThenInclude(c => c.LkTeacher)
+                .Include(x => x.Portfolio)
+                .Include(x => x.Thumbnail)
+                .Include(x => x.Config)
+                .AsNoTracking().FirstOrDefaultAsync();
+            
+            var cert = await _db.Certificate.Where(x => x.LkStudentId == id)
+                .Include(x => x.Image).AsNoTracking().ToListAsync();
+
+            return new PublicProfile { Student = stud, Certificates = cert};
+        }
+        public Task<Portfolio> GetPublicPortfolio(int id)
+        {
+            return _db.Portfolios.Where(x => x.Id==id)
+                .Include(x => x.Projects)
+                .Select(p=>new Portfolio
+                {
+                    Id=p.Id,
+                    LkStudentId=p.Id,
+                    Projects=p.Projects.Where(x=>x.IsShow).ToList()
+                })
+                .AsNoTracking().FirstOrDefaultAsync();
+        }
+        public Task<List<LkStudent>> GetClassmates(int id)
+        {
+            var grId = _db.Groups.Where(x => x.Students.Any(s => s.Id == id))
+                .Select(z=>z.Id)
+                .FirstOrDefault();          
+            return _db.Students
+                .Where(x => x.GroupId == grId && x.Id!=id)
+                .AsNoTracking().ToListAsync();
+        }
+        public Task<List<LkTeacher>> GetTeachers(int id)
+        {
+            //var teachers = from teacher in _db.Teachers
+            //               join subjectTeacher in _db.SubjectTeachers on teacher.Id equals subjectTeacher.LkTeacherId
+            //               join Group in _db.Groups.Where(x=>x.Students.Where(s=>s.Id==id).First().GroupId==x.Id)
+            //               on subjectTeacher.GroupId equals Group.Id
+            //               where Group.Id==id
+            //               group teacher by teacher.LastName;
+            var teachers = from teacher in _db.Teachers
+                           join subjectTeacher in _db.SubjectTeachers on teacher.Id equals subjectTeacher.LkTeacherId
+                           join Group in _db.Groups on subjectTeacher.GroupId equals Group.Id
+                           join stud in _db.Students on Group.Id equals stud.GroupId
+                           where stud.Id == id
+                           select teacher;                           
+            return teachers.AsNoTracking().ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace PdApi.Model
         public int Id { get; set; }
 
         public int ProjectGalleryId { get; set; }
+        [JsonIgnore]
         public ProjectGallery ProjectGallery { get; set; }
 
         public int LkImageId { get; set; }
